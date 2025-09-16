@@ -1,61 +1,58 @@
 //This class is specifically for submission only. Content subject to change.
 
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main{
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
+        // Input section:
         Scanner input = new Scanner(System.in);
 
-        // Inputs
-        int S = input.nextInt(); // indicates n = 2^s students, s is ALSO log n, the "depth"
-        int M = input.nextInt();
+        int n = input.nextInt(); // n < 100,000
+        int max = 20000000; // from problem, it is guaranteed that the 100,000th prime pair are less than 20,000,000 << 2^31 - 1
+        boolean[] prime = new boolean[max];
 
-        int size = 1;
+        int ans = -1;
+        int pairCount = 0;
+        int i = 2;
+        // Computing section:
+        sieve(prime); // now we've found the entire list of primes 
 
-        for(int i = 0; i < S; i++){
-            size *= 2;
+        while(i+2 < max && pairCount < n){
+            
+            if(prime[i] && prime[i+2]){
+                ans = i;
+                pairCount++;
+            }
+            i++;
         }
+        // We can assume that we can definitely find Nth pair in this range.
 
-        boolean[] contest = new boolean[size];
+        // Output
+        System.out.println("(" + ans + ", " + (ans+2) + ")");
+        input.close();
+    }
+
+    // Helper method of the sieve approach: O(N * log(log N))
+    public static void sieve(boolean[] prime){
         
-        Arrays.fill(contest, true);
-
-        for(int i = 0; i < M; i++){
-            int temp = input.nextInt();
-            contest[temp-1] = false;
+        for(int i = 2; i < prime.length; i++){
+            prime[i] = true;
         }
 
-        // Calculation steps
-        int freePass = 0;
+        int limit = (int)Math.sqrt(prime.length);
+        for(int i = 2; i < limit; i++){
 
-        while (size > 1) {
-            boolean[] nextRound = new boolean[size / 2];
+            if(prime[i]){
 
-            for (int i = 0; i < size; i += 2) {
-                boolean p1 = contest[i];
-                boolean p2 = contest[i+1];
-                // Three cases:
-                if (p1 && p2) {
-                    // both present → normal match
-                    nextRound[i/2] = true;
-                } else if (p1 ^ p2) {
-                    // one present → free pass
-                    freePass++;
-                    nextRound[i/2] = true;
-                } else {
-                    // both missing
-                    nextRound[i/2] = false;
+                for(int j = i*i; j < prime.length; j += i){ 
+                // noticed we start at i^2 because any number smaller than that should be already marked
+                // This is because we already checked any multiple 1, 2, ..., i-1, so we can assume this is already crossed out
+                // i * 2, i * 3, i * 4, ..., i * (i-1).
+                    prime[j] = false;
                 }
             }
-
-            contest = nextRound; // advance to next round
-            size /= 2; // the total times of doing this is equal to S, log n. (as n = 2^S)
         }
-        // Outputs
-        System.out.print(freePass);
-        input.close();
     }
 }
