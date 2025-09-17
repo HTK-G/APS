@@ -1,58 +1,27 @@
-//This class is specifically for submission only. Content subject to change.
 
-import java.util.Scanner;
+import java.util.*;
 
-public class Main{
+public class Main {
 
     public static void main(String[] args) {
-
-        // Input section:
         Scanner input = new Scanner(System.in);
+        int num = input.nextInt();
 
-        int n = input.nextInt(); // n < 100,000
-        int max = 20000000; // from problem, it is guaranteed that the 100,000th prime pair are less than 20,000,000 << 2^31 - 1
-        boolean[] prime = new boolean[max];
+        int ans = reverseBytes(num);
 
-        int ans = -1;
-        int pairCount = 0;
-        int i = 2;
-        // Computing section:
-        sieve(prime); // now we've found the entire list of primes 
-
-        while(i+2 < max && pairCount < n){
-            
-            if(prime[i] && prime[i+2]){
-                ans = i;
-                pairCount++;
-            }
-            i++;
-        }
-        // We can assume that we can definitely find Nth pair in this range.
-
-        // Output
-        System.out.println("(" + ans + ", " + (ans+2) + ")");
+        System.out.printf("%d converts to %d", num, ans);
         input.close();
     }
 
-    // Helper method of the sieve approach: O(N * log(log N))
-    public static void sieve(boolean[] prime){
-        
-        for(int i = 2; i < prime.length; i++){
-            prime[i] = true;
-        }
+    public static int reverseBytes(int num) {
+        int byte1 = num & 255;
+        //256 = 00000000 00000000 00000000 11111111
+        //256 = 2^8 - 1
+        int byte2 = (num >> 8) & 255;
+        int byte3 = (num >> 16) & 255;
+        int byte4 = (num >> 24) & 255;
 
-        int limit = (int)Math.sqrt(prime.length);
-        for(int i = 2; i < limit; i++){
+        return (byte1 << 24 | byte2 << 16 | byte3 << 8 | byte4);
 
-            if(prime[i]){
-
-                for(int j = i*i; j < prime.length; j += i){ 
-                // noticed we start at i^2 because any number smaller than that should be already marked
-                // This is because we already checked any multiple 1, 2, ..., i-1, so we can assume this is already crossed out
-                // i * 2, i * 3, i * 4, ..., i * (i-1).
-                    prime[j] = false;
-                }
-            }
-        }
     }
 }
