@@ -6,76 +6,43 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) {
-        // Input section
         Scanner input = new Scanner(System.in);
-        char[] instruction = input.next().toUpperCase().toCharArray();
+
         int n = input.nextInt();
-        String data = input.next();
-        // System.out.println("instruction: " + instruction + " n: " + n + " Data: " + data);
-        input.close();
+        int m = input.nextInt();
 
-        Deque<Integer> puzzle = new ArrayDeque<>();
+        boolean[] time = new boolean[1000001];
 
-        String trimmed = data.substring(1, data.length() - 1); // remove [ ]
-        if (!trimmed.isEmpty()) {
-            for (String numStr : trimmed.split(",")) {
-                puzzle.add(Integer.parseInt(numStr));
-            }
-        }
-        // Initiate the deque
-        int i = 0;
-        boolean fifo = true;
-        while (i < instruction.length) {
+        for (int i = 0; i < n; i++) {
+            int start = input.nextInt();
+            int end = input.nextInt();
 
-            if (instruction[i] == 'R') {
-                int count = 0;
-                while (i < instruction.length && instruction[i] == 'R') {
-                    count++;
-                    i++;
-                }
-                if (count % 2 == 1) {
-                    fifo = !fifo;
-                }
-            } else { // 'D'
-                if (puzzle.isEmpty()) {
-                    System.out.println("error");
+            for (int j = start; j < end; j++) {
+                if (time[j]) {
+                    System.out.println("CONFLICT");
                     return;
                 }
-
-                if (fifo) { // use poll
-                    puzzle.removeFirst();
-                } else {
-                    puzzle.removeLast();
-                }
-                i++;
+                time[j] = true;
             }
         }
 
-        if (puzzle.isEmpty()) {
-            System.out.println("[]");
-        } else {
-            StringBuilder sb = new StringBuilder();
-            sb.append('[');
+        for (int i = 0; i < m; i++) {
+            int start = input.nextInt();
+            int end = input.nextInt();
+            long interval = input.nextInt();
+            long duration = end - start;
+            for (long j = start; j < time.length; j += interval) {
 
-            if (fifo) {
-
-                while (!puzzle.isEmpty()) {
-
-                    sb.append(puzzle.removeFirst());
-                    sb.append(',');
-
-                }
-            } else {
-                while (!puzzle.isEmpty()) {
-
-                    sb.append(puzzle.removeLast());
-                    sb.append(',');
+                for (long k = j; k < j + duration && k < time.length; k++) {
+                    if (time[(int) k]) {
+                        System.out.println("CONFLICT");
+                        return;
+                    }
+                    time[(int) k] = true;
                 }
             }
-            sb.deleteCharAt(sb.length() - 1);
-            sb.append(']');
-            System.out.println(sb.toString());
         }
 
+        System.out.println("NO CONFLICT");
     }
 }
