@@ -1,3 +1,4 @@
+
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
@@ -6,7 +7,8 @@ public class ChasmCrossing {
 
     // store each passenger info
     static class Passenger {
-        int arriveTime; 
+
+        int arriveTime;
         int index;
 
         Passenger(int arriveTime, int index) {
@@ -20,9 +22,9 @@ public class ChasmCrossing {
         // Input Section
         Scanner input = new Scanner(System.in);
 
-        int N = input.nextInt(); 
-        int T = input.nextInt(); 
-        int M = input.nextInt(); 
+        int N = input.nextInt();
+        int T = input.nextInt();
+        int M = input.nextInt();
 
         Queue<Passenger> central = new LinkedList<>();
         Queue<Passenger> uptown = new LinkedList<>();
@@ -72,16 +74,22 @@ public class ChasmCrossing {
                 }
                 time += T;
                 atCentral = !atCentral; // flip side
-            }
-            // Case 2: no one here, but passengers are waiting on the other side
+            } // Case 2: no one here, but passengers are waiting on the other side
             else if (!oppoSide.isEmpty() && oppoSide.peek().arriveTime <= time) {
                 time += T;
                 atCentral = !atCentral; // cross empty
-            }
-            // Case 3: no one ready anywhere, wait for the next arrival
+            } // Case 3: no one ready anywhere, wait for the next arrival
             else {
-                time += T;
+                int nextArrive = Integer.MAX_VALUE;
+                if (!currentSide.isEmpty()) {
+                    nextArrive = Math.min(nextArrive, currentSide.peek().arriveTime);
+                }
+                if (!oppoSide.isEmpty()) {
+                    nextArrive = Math.min(nextArrive, oppoSide.peek().arriveTime);
+                }
+                time = Math.max(time, nextArrive); // wait until next arrival
             }
+
         }
     }
 }
