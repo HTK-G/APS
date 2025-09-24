@@ -5,91 +5,84 @@ import java.util.*;
 
 public class Main {
 
-    public static void main(String[] args) {
-        // Input section
-        Scanner input = new Scanner(System.in);
+    // store each passenger info
+    static class Passenger {
+        int arriveTime; 
+        int index;
 
-        char[] before = input.next().toUpperCase().toCharArray();
-        char[] after = input.next().toUpperCase().toCharArray();
-
-        if (before.length != after.length) {
-            System.out.println("[");
-            System.out.println(']');
-            return;
+        Passenger(int arriveTime, int index) {
+            this.arriveTime = arriveTime;
+            this.index = index;
         }
-
-        HashMap<Character, Integer> freq = new HashMap<>();
-        for (Character c : before) {
-
-            freq.put(c, freq.getOrDefault(c, 0) + 1);
-        }
-        for (Character c : after) {
-            if (freq.containsKey(c) && freq.get(c) != 0) {
-                freq.put(c, freq.get(c) - 1);
-            } else {
-                System.out.println("[");
-                System.out.println(']');
-                return;
-            }
-        }
-
-        // Calculation Steps
-        ArrayList<ArrayList<Character>> paths = new ArrayList<>();
-        dfs(before, after, 0, 0, paths, new ArrayList<>(), new ArrayDeque<>());
-
-        // Output section
-        System.out.println("[");
-        for (ArrayList<Character> path : paths) {
-            for (int k = 0; k < path.size(); k++) {
-                System.out.print(path.get(k));
-                if (k < path.size() - 1) {
-                    System.out.print(" ");
-                }
-            }
-            System.out.println();
-        }
-        System.out.println("]");
-
-        input.close();
-
     }
 
-    // i is the index for "before" and j is the index for "after"
-    // At this step, it is guaranteed that len(before) == len(after)
-    public static void dfs(
-            char[] before, char[] after, int i, int j,
-            ArrayList<ArrayList<Character>> paths, ArrayList<Character> path, Deque<Character> stack) {
+    public static void main(String[] args) {
 
-        // This recursive method is going deeeep
-        // base case:
-        if (i == before.length && j == after.length) {
-            paths.add(new ArrayList<>(path));
-            return;
+        // Input Section
+        Scanner input = new Scanner(System.in);
+
+        int N = input.nextInt(); 
+        int T = input.nextInt(); 
+        int M = input.nextInt(); 
+
+        Queue<Passenger> central = new LinkedList<>();
+        Queue<Passenger> uptown = new LinkedList<>();
+
+        int[] result = new int[M];
+
+        for (int i = 0; i < M; i++) {
+            int arriveTime = input.nextInt();
+            String station = input.next();
+            Passenger p = new Passenger(arriveTime, i);
+
+            if (station.equals("Central")) {
+                central.add(p);
+            } else {
+                uptown.add(p);
+            }
         }
 
-        // We do 'i' operation first for lexicographical purpose
-        if (i < before.length) {
+        // Calculation 
+        simulation(central, uptown, result, T, N);
 
-            stack.push(before[i]);
-            i++;
-            path.add('i');
-            dfs(before, after, i, j, paths, path, stack);
-            stack.pop();
-            path.remove(path.size() - 1);
-            i--;
-
+        // Output section
+        for (int time : result) {
+            System.out.println(time);
         }
 
-        // Then we check for "o" operation
-        if (!stack.isEmpty() && stack.peek() == after[j]) {
+        input.close();
+    }
 
-            char temp = stack.pop();
-            j++;
-            path.add('o');
-            dfs(before, after, i, j, paths, path, stack);
-            stack.push(temp);
-            path.remove(path.size() - 1);
-            j--;
+    public static void simulation(Queue<Passenger> central, Queue<Passenger> uptown, int[] result, int T, int N) {
+        boolean atCentral = true; // cart starts at Central
+        int time = 0;
+
+        while (!central.isEmpty() || !uptown.isEmpty()) {
+
+            // pick side reference
+            Queue<Passenger> currentSide = atCentral ? central : uptown;
+            Queue<Passenger> oppoSide = atCentral ? uptown : central;
+
+            // Case 1: load passengers from current side
+            if (!currentSide.isEmpty() && currentSide.peek().arriveTime <= time) {
+                int count = 0;
+                while (!currentSide.isEmpty() && currentSide.peek().arriveTime <= time && count < N) {
+                    Passenger p = currentSide.poll();
+                    result[p.index] = time + T; // arrives after travel time
+                    count++;
+                }
+                time += T;
+                atCentral = !atCentral; // flip side
+            }
+            // Case 2: no one here, but passengers are waiting on the other side
+            else if (!oppoSide.isEmpty() && oppoSide.peek().arriveTime <= time) {
+                time += T;
+                atCentral = !atCentral; // cross empty
+            }
+            // Case 3: no one ready anywhere, wait for the next arrival
+            else {
+                time += T;
+            }
         }
     }
 }
