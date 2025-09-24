@@ -1,10 +1,8 @@
 
-import java.lang.reflect.Array;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Scanner;
 
 public class StackPuzzle {
@@ -13,10 +11,8 @@ public class StackPuzzle {
         // Input section
         Scanner input = new Scanner(System.in);
 
-        char[] before = input.next().toCharArray();
-        char[] after = input.next().toCharArray();
-
-        StringBuilder cur = new StringBuilder(); // this can also be a "stack"
+        char[] before = input.next().toUpperCase().toCharArray();
+        char[] after = input.next().toUpperCase().toCharArray();
 
         if (before.length != after.length) {
             System.out.println("[");
@@ -43,7 +39,6 @@ public class StackPuzzle {
         ArrayList<ArrayList<Character>> paths = new ArrayList<>();
         dfs(before, after, 0, 0, paths, new ArrayList<>(), new ArrayDeque<>());
 
-        
         // Output section
         System.out.println("[");
         for (ArrayList<Character> path : paths) {
