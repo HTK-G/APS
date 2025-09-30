@@ -1,64 +1,43 @@
 
 // This program is for submission's only
 // Content subject to change at any moment
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.math.BigInteger;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args){
 
-        // Input section
-        Scanner input = new Scanner(System.in);
-        char[] s = input.nextLine().toCharArray();
-        input.close();
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        long n = Long.parseLong(br.readLine().trim());
 
-        HashSet<Character> set = new HashSet<>();
-        HashMap<Character, Character> map = new HashMap<>();
-        set.add('(');
-        set.add(')');
-        set.add('{');
-        set.add('}');
-        set.add('[');
-        set.add(']');
-
-        map.put('(', ')');
-        map.put('{','}');
-        map.put('[', ']');
-
-        // Calculation steps
-        Stack<Character> stack = new Stack<>();
-
-        for(int i = 0; i < s.length; i++){
-            char cur = s[i];
-            if(!set.contains(cur)) continue; // check if it's a bracket
-
-            if(map.containsKey(cur)){
-                // left bracket 
-                stack.push(cur);
-
-            }else{ 
-                if(!stack.isEmpty()){
-                    // right bracket
-                    char temp = stack.pop();
-                    if(map.get(temp) != cur){
-                        System.out.println("NO " + (i+1));
-                        return;
-                    }
-                }else{
-                    System.out.println("NO " + (i+1));
-                    return;
-                }
-            }
-
+        if (isFamily(n)) {
+            System.out.println("July Fourth Family Number");
+        } else {
+            System.out.println("Not in the family");
         }
-
-        if(!stack.isEmpty()){
-            System.out.println("NO " + (s.length + 1));
-            return;
-        }
-
-
-        // Output Section
-        System.out.println("YES");
     }
-    
+
+    private static boolean isFamily(long n) {
+        Queue<Long> q = new ArrayDeque<>();
+        q.add(4L);
+        q.add(7L);
+
+        while (!q.isEmpty()) {
+            long cur = q.poll();
+
+            if (cur > n) continue;  // prune
+            if (n % cur == 0) return true;
+
+            long a = cur * 10 + 4;
+            long b = cur * 10 + 7;
+
+            if (a > 0 && a <= n) q.add(a);
+            if (b > 0 && b <= n) q.add(b);
+        }
+        return false;
+    }
+
 }
