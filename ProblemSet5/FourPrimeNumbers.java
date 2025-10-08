@@ -1,9 +1,9 @@
 
-// This program is for submission's only
-// Content subject to change at any moment
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Scanner;
 
-public class Main {
+public class FourPrimeNumbers {
 
     public static void main(String[] args) throws Exception {
         Scanner input = new Scanner(System.in);
