@@ -26,8 +26,8 @@ public class MoveUnionFind {
         for (int i = 1; i <= N; i++) {
             parent[i] = i;
             size[i] = 1;
-            sum[i] = i;      // elements are valued by their index
-            belong[i] = i;   // element i currently represented by node i
+            sum[i] = i;
+            belong[i] = i;
         }
         nextId = N + 1;
 
