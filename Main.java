@@ -6,57 +6,45 @@ import java.util.*;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
+    public static void main(String[] args) {
 
-        int G;
-        st = new StringTokenizer(br.readLine());
-        G = Integer.parseInt(st.nextToken());
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        Map<Integer, Integer> belong = new HashMap<>();
-        for (int g = 0; g < G; g++) {
-            st = new StringTokenizer(br.readLine());
-            int size = Integer.parseInt(st.nextToken());
-            for (int i = 0; i < size; i++) {
-                belong.put(Integer.parseInt(st.nextToken()), g);
-            }
-        }
+            int W = Integer.parseInt(br.readLine());
+            int N = Integer.parseInt(br.readLine());
 
-        Queue<Integer> mainQ = new ArrayDeque<>();
-        Map<Integer, ArrayDeque<Integer>> groupQ = new HashMap<>();
-        StringBuilder out = new StringBuilder();
+            String hippos = br.readLine();
 
-        while (true) {
-            st = new StringTokenizer(br.readLine());
-            String cmd = st.nextToken();
-            if (cmd.equals("Shutdown")) {
-                break;
-            }
+            Scanner input = new Scanner(hippos);
+            PriorityQueue<Integer> maxh = new PriorityQueue<>(Collections.reverseOrder());
+            int sum = 0;
 
-            if (cmd.equals("Push")) {
-                int x = Integer.parseInt(st.nextToken());
-                int g = belong.get(x);
+            for (int i = 0; i < N; i++) {
+                int cur = input.nextInt();
 
-                ArrayDeque<Integer> q = groupQ.get(g);
-                if (q == null) {
-                    q = new ArrayDeque<>();
-                    groupQ.put(g, q);
-                    mainQ.add(g);
+                if (cur > W) {
+                    continue;
                 }
-                q.add(x);
-            } else if (cmd.equals("Pop")) {
-                int g = mainQ.peek();
-                ArrayDeque<Integer> q = groupQ.get(g);
-                int x = q.poll();
-                out.append(x).append('\n');
-                if (q.isEmpty()) {
-                    groupQ.remove(g);
-                    mainQ.poll();
+
+                if (sum + cur <= W) {
+                    maxh.add(cur);
+                    sum += cur;
+                } else if (!maxh.isEmpty() && cur < maxh.peek()) {
+                    // Replace the max with current min
+                    sum -= maxh.poll();
+                    sum += cur;
+                    maxh.add(cur);
                 }
             }
+            input.close();
+
+            System.out.print(maxh.size());
+
+        } catch (IOException e) {
+            System.out.print(e);
         }
 
-        System.out.print(out.toString());
     }
+
 }
