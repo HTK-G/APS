@@ -2,7 +2,8 @@
 // This program is for submission's only
 // Content subject to change at any moment
 import java.io.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.StringTokenizer;
 
 public class Main {
 
@@ -12,26 +13,31 @@ public class Main {
 
         int N = Integer.parseInt(br.readLine());
 
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        int[] grades = new int[101];
+        int[][] list = new int[N][2];
+
+        StringTokenizer st;
 
         for (int i = 0; i < N; i++) {
-            grades[Integer.parseInt(st.nextToken())]++;
+
+            st = new StringTokenizer(br.readLine());
+            // 0 is task time, 1 is the finish time
+            list[i][0] = Integer.parseInt(st.nextToken());
+            list[i][1] = Integer.parseInt(st.nextToken());
+
         }
 
-        StringBuilder sb = new StringBuilder();
+        Arrays.sort(list, (a, b) -> Integer.compare(b[1], a[1]));
 
-        for (int i = 0; i < grades.length; i++) {
+        int solveTime = 0;
+        int maxFinish = 0;
 
-            while (grades[i] != 0) {
-                sb.append(i);
-                sb.append(' ');
-                grades[i]--;
-            }
+        for (int[] task : list) {
+
+            solveTime += task[0];
+            maxFinish = Math.max(maxFinish, solveTime + task[1]);
         }
-        sb.deleteCharAt(sb.length() - 1);
-        System.out.println(sb);
+
+        System.out.println(maxFinish);
 
     }
-
 }
