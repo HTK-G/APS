@@ -2,42 +2,43 @@
 // This program is for submission's only
 // Content subject to change at any moment
 import java.io.*;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
 
+        // Input section
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
         int N = Integer.parseInt(br.readLine());
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int[] list = new int[N];
 
-        int[][] list = new int[N][2];
-
-        StringTokenizer st;
-
+        // store each number as a String
         for (int i = 0; i < N; i++) {
-
-            st = new StringTokenizer(br.readLine());
-            // 0 is task time, 1 is the finish time
-            list[i][0] = Integer.parseInt(st.nextToken());
-            list[i][1] = Integer.parseInt(st.nextToken());
-
+            list[i] = Integer.parseInt(st.nextToken());
         }
 
-        Arrays.sort(list, (a, b) -> Integer.compare(b[1], a[1]));
+        int left = 0, right = 0, maxLen = 0;
+        HashSet<Integer> set = new HashSet<>();
 
-        int solveTime = 0;
-        int maxFinish = 0;
+        while (right < N) {
 
-        for (int[] task : list) {
-
-            solveTime += task[0];
-            maxFinish = Math.max(maxFinish, solveTime + task[1]);
+            if (!set.contains(list[right])) {
+                set.add(list[right]);
+            } else {
+                maxLen = Math.max(maxLen, set.size());
+                while (list[left] != list[right] && left < right) {
+                    set.remove(list[left]);
+                    left++;
+                }
+                left++;
+            }
+            right++;
         }
+        maxLen = Math.max(maxLen, set.size());
 
-        System.out.println(maxFinish);
-
+        System.out.println(maxLen);
     }
+
 }
