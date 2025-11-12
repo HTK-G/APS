@@ -2,167 +2,98 @@
 // This program is for submission's only
 // Content subject to change at any moment
 import java.io.*;
-import java.util.*;
+import java.util.StringTokenizer;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        // hint: 2 dimensional binary search?
         // Input section
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         StringTokenizer st = new StringTokenizer(br.readLine());
-        int N = Integer.parseInt(st.nextToken());
-        int M = Integer.parseInt(st.nextToken());
 
-        int[][] matrix = new int[N][M];
+        int A = Integer.parseInt(st.nextToken());
+        int B = Integer.parseInt(st.nextToken());
 
-        // Inititalize matrix
-        for (int i = 0; i < N; i++) {
-            st = new StringTokenizer(br.readLine());
-            for (int j = 0; j < M; j++) {
+        // Base cases check:
+        // if no 1 or only 1, then output is 1
+        if (A == 0 || A == 1) {
 
-                matrix[i][j] = Integer.parseInt(st.nextToken());
-            }
+            System.out.println(A);
+            return;
         }
 
-        int K = Integer.parseInt(br.readLine());
+        // if no 0? then every digit is 1
+        if (B == 0) {
 
-        // Initialize query matrix
-        for (int i = 0; i < K; i++) {
-            st = new StringTokenizer(br.readLine());
-            int min = Integer.parseInt(st.nextToken());
-            int max = Integer.parseInt(st.nextToken());
+            long ans = 0L;
 
-            int ans = 0;
-            int lo = 0;
-            int hi = Math.min(N, M); //choose the longer side
-
-            while (lo <= hi) {
-
-                int mid = lo + (hi - lo) / 2;
-
-                if (existMatrix(matrix, mid, min, max)) {
-                    ans = mid;
-                    lo = mid + 1;
-                } else {
-                    hi = mid - 1;
-                }
-            }
+            ans |= (1L << A);
+            ans--;
 
             System.out.println(ans);
+
+            return;
         }
 
+        // here from our observation, a string can have at most
+        // 2 * B '01' or '10's
+        // To illustrate this, see: 101101101, depending on how
+        // many 0s we have, we can form at most B 101 pairs, so
+        // therefore at most 2B 1s are paired with 0
+        // The rest of 1s, we just put them in the right most
+        // section to keep the number as small as possible
+        // Structure: _1__0__11__0__11__0__1__
+        // the first and last can has at most one 1, since 101.
+        // int ones = Math.max(A, (2 * B));
+        int remainOnes = A;
+
+        int[] bits = new int[B + 1];
+
+        // think of from right to left
+        for (int i = 0; i <= B; i++) {
+
+            int maxOnes = 2;
+
+            // if we are at both ends
+            // the first and last can has at most one 1, since 101.
+            if (i == 0 || i == B) {
+
+                maxOnes = 1;
+            }
+
+            while (maxOnes != 0 && remainOnes != 0) {
+
+                bits[i]++;
+                remainOnes--;
+                maxOnes--;
+            }
+
+        }
+
+        // The rest 1: _1__0__11__0__11__0__111111__
+        if (remainOnes != 0) {
+
+            bits[0] += remainOnes;
+            remainOnes = 0;
+        }
+
+        long ans = 0L;
+
+        for (int i = B; i >= 0; i--) {
+
+            while (bits[i] != 0) {
+
+                ans = ((ans << 1L) | 1L);
+                bits[i]--;
+            }
+            if (i > 0) {
+                ans = (ans << 1L);
+            }
+
+        }
+
+        System.out.println(ans);
     }
-
-    public static boolean existMatrix(int[][] matrix, int len, int min, int max) {
-
-        // edge case
-        if (len == 0) {
-            return true;
-        }
-
-        for (int i = 0; i + len - 1 < matrix.length; i++) {
-
-            int j = minStartPoint(matrix[i], min);
-
-            if (j == matrix[0].length) {
-                continue;
-            }
-
-            if (j + len - 1 >= matrix[0].length) {
-                continue;
-            }
-
-            if (matrix[i + len - 1][j + len - 1] <= max) {
-
-                return true;
-            }
-        }
-
-        return false;
-
-    }
-
-    public static int minStartPoint(int[] row, int min) {
-
-        // int j = 0;
-        // while (j < row.length && row[j] < min) {
-        //     j++;
-        // }
-        // return j;
-        // changed to binary search
-        int lo = 0;
-        int hi = row.length;
-
-        while (lo < hi) {
-
-            int mid = lo + (hi - lo) / 2;
-
-            if (row[mid] < min) {
-
-                lo = mid + 1;
-
-            } else {
-                hi = mid;
-            }
-        }
-        return lo;
-    }
-
 }
-
-/*
- * // Calculation Steps & output
-        for (int[] range : query) {
-
-            int min = range[0];
-            int max = range[1];
-
-            int maxSize = 0;
-            int i = 0, j = 0;
-            // 1. do a search diagnal only,
-            // find the first element that is greater or equal to left
-            while (i < matrix.length && j < matrix[0].length && matrix[i][j] < min) {
-                i++;
-                j++;
-            }
-            // 2. Check this element's size
-            maxSize = Math.max(maxSize, size(matrix, i, j, max));
-
-            int row = i - 1;
-
-            // 3. Check above
-            while (row >= 0 && matrix[i][j] >= min) // 3. First do a check on 
-            {
-                maxSize = Math.max(size(matrix, row, j, max), maxSize);
-                row--;
-            }
-
-            // 4. Check left
-            int col = j - 1;
-
-            while (col >= 0 && matrix[i][j] >= min) {
-
-                maxSize = Math.max(size(matrix, i, col, max), maxSize);
-                col--;
-            }
-
-            // output
-            System.out.println(maxSize);
-        }
-    }
-
-    public static int size(int[][] matrix, int i, int j, int max) {
-
-        int n = 0;
-
-        while (i < matrix.length && j < matrix[0].length && matrix[i][j] < max) {
-            i++;
-            j++;
-            n++;
-        }
-        return n;
-    }
- */
