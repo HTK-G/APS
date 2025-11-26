@@ -1,0 +1,20 @@
+{
+    "java.project.sourcePaths": [
+        "ProblemSetB",
+        "ProblemSet8",
+        ".",
+        "ProblemSet1",
+        "Codeforces",
+        "CommonAlgorithms",
+        "ProblemSet2",
+        "ProblemSet3",
+        "ProblemSet4",
+        "ProblemSet5",
+        "ProblemSet7",
+        "ProblemSet9",
+        "ProblemSet6",
+        "ProblemSetA",
+        "Python"
+    ],
+    "java.project.referencedLibraries": []
+}

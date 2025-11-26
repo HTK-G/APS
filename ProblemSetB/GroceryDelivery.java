@@ -1,10 +1,8 @@
 
-// This program is for submission's only
-// Content subject to change at any moment
 import java.io.*;
 import java.util.*;
 
-public class Main {
+public class GroceryDelivery {
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
